@@ -1,0 +1,4 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Cloudticity: Launches Amazon Linux EC2 Instance with Apache'
+Parameters:
+Resources:
