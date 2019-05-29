@@ -1,0 +1,154 @@
+
+int forwardBackward; // Here's where we'll keep our channel values
+int leftRight; //Right stick left and right channel...
+
+int pwm_b = 11;  //PWM control for motor outputs, Right Track
+int dir_b = 13;  //direction control for motor outputs, Right Track
+int pwm_a = 3;  //PWM control for motor outputs, Left Track
+int dir_a = 12;  //direction control for motor outputs, Left Track
+
+int motorSpeed = 0;
+
+// the setup routine runs once when you press reset:
+void setup() {                
+  // initialize the digital pin as an input.
+  pinMode(24, INPUT); //forwardBackward channel pin
+  pinMode(25, INPUT); //leftRight channel pin
+  
+  
+  Serial.begin(9600); // Pour a bowl of Serial
+  
+ //Set control pins to be outputs
+  pinMode(pwm_b, OUTPUT);
+  pinMode(dir_b, OUTPUT);
+  pinMode(pwm_a, OUTPUT);
+  pinMode(dir_a, OUTPUT);
+
+  digitalWrite(pwm_b, 0);
+  digitalWrite(pwm_a, 0);
+
+}
+
+// the loop routine runs over and over again forever:
+void loop() {
+  
+  forwardBackward = pulseIn(24, HIGH); //forwardBackward 
+  leftRight = pulseIn(25, HIGH); // leftRight
+  
+  if(forwardBackward == 0){ //Prevents movement when controller is off
+    digitalWrite(pwm_b, 0);
+    digitalWrite(pwm_a, 0);
+  }
+  
+  if(forwardBackward <= 1600 and forwardBackward >= 1400){ //Stick is in the forwardBackward 'dead' zone.
+    
+    checkTurn();      
+    
+  } else {
+    
+    goStraight();
+  
+  }
+
+}
+
+void checkTurn(){
+ 
+  if(leftRight <= 1600 and leftRight >= 1400) { //Stick is in left and right 'dead' zone.
+    
+    digitalWrite(pwm_b, 0);
+    digitalWrite(pwm_a, 0);
+    return;
+  }
+  
+    if( leftRight > 1600){
+    
+    Serial.print("Pushing right stick to the left: "); // Print the value of each channel
+    Serial.println(leftRight);        
+    
+    
+    motorSpeed = map(leftRight, 1000,2000, -500, 500); //center over zero
+    motorSpeed = constrain(motorSpeed, -255, 255); //only pass values whose absolutes are valid pwm values
+                                   
+                                   
+    Serial.print("Value of 'motorSpeed' varibable: "); // Print the value of each channel
+    Serial.println(motorSpeed);  
+    
+    digitalWrite(dir_b, 1);                                   
+    analogWrite(pwm_b, motorSpeed);
+    digitalWrite(dir_a, 0);                                   
+    analogWrite(pwm_a, motorSpeed);
+    return;
+    
+  }
+  
+    if(leftRight < 1400){
+    
+    Serial.print("Pushing right stick to right: "); // Print the value of each channel
+    Serial.println(leftRight);          
+    
+    
+    motorSpeed = map(leftRight, 1000,2000, -500, 500); //center over zero
+    motorSpeed = constrain(motorSpeed, -255, 255); //only pass values whose absolutes are valid pwm values                  
+                                   
+    Serial.print("Value of 'motorSpeed' varibable: "); // Print the value of each channel
+    Serial.println(motorSpeed);     
+ 
+     /*What we're doing here is determining whether we want to move forward or backward*/
+    if(motorSpeed > 0){digitalWrite(dir_b, 1);};
+    if(motorSpeed < 0){digitalWrite(dir_b, 0); motorSpeed = abs(motorSpeed);};    
+
+    digitalWrite(dir_b, 0);                                                                     
+    analogWrite(pwm_b, motorSpeed);
+    digitalWrite(dir_a, 1);                                                                     
+    analogWrite(pwm_a, motorSpeed);
+    return;
+    
+  }
+  
+}
+
+void goStraight(){
+  if(forwardBackward > 1600){
+    
+    Serial.print("Pushing right stick forward: "); // Print the value of each channel
+    Serial.println(forwardBackward);        
+    
+    
+    motorSpeed = map(forwardBackward, 1000,2000, -500, 500); //center over zero
+    motorSpeed = constrain(motorSpeed, -255, 255); //only pass values whose absolutes are valid pwm values
+                                   
+                                   
+    Serial.print("Value of 'motorSpeed' variable: "); // Print the value of each channel
+    Serial.println(motorSpeed);   
+  
+    digitalWrite(dir_b, 1);                                                              
+    analogWrite(pwm_b, motorSpeed);
+    digitalWrite(dir_a, 1);                                                              
+    analogWrite(pwm_a, motorSpeed);
+    
+  }
+  
+    if(forwardBackward < 1400 and forwardBackward > 0){
+    
+    Serial.print("Pushing right stick backward: "); // Print the value of each channel
+    Serial.println(forwardBackward);          
+    
+    
+    motorSpeed = map(forwardBackward, 1000,2000, -500, 500); //center over zero
+    motorSpeed = constrain(motorSpeed, -255, 255); //only pass values whose absolutes are valid pwm values                  
+                                   
+    Serial.print("Value of 'motorSpeed' variable: "); // Print the value of each channel
+    Serial.println(motorSpeed); 
+
+    /*What we're doing here is determining whether we want to move forward or backward*/
+    if(motorSpeed > 0){digitalWrite(dir_b, 1);};
+    if(motorSpeed < 0){digitalWrite(dir_b, 0); motorSpeed = abs(motorSpeed);};      
+
+    digitalWrite(dir_b, 0);                                                                     
+    analogWrite(pwm_b, motorSpeed);
+    digitalWrite(dir_a, 0);                                                                     
+    analogWrite(pwm_a, motorSpeed);
+    
+  }
+ }

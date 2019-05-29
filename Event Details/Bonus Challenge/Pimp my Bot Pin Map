@@ -1,0 +1,30 @@
+Pimp my Bot Pin Map Connectathon 2019
+
+
+All ranges of uncertainty: +/- 20
+Pin 24/25/26/27 recommended deadzone = 1400 - 1600
+Pin 28 is unused
+Motor MAX speed 255
+
+<--- Pin Map --->
+Pin 24: Aileron/Roll (Right analog left/right) Range: Left Limit = 1780, Right Limit = 1180
+Pin 25: Elevator/Pitch (Right analog up/down) Range: Up Limit = 1780, Down Limit = 1180
+Pin 26: Throttle (Left analog up/down) Range: Up Limit = 1890, Down Limit = 1080
+Pin 27: Rudder/Yaw (Left analog left/right) Range: Left Limit = 1790, Right Limit = 1190
+Pin 29: Flight Mode (3 way switch) Range: 0 = 1880, 1 = 1490, 2 = 1090
+
+
+<--- put in setup --->
+pinMode(24, INPUT); //Roll
+pinMode(25, INPUT); //Pitch
+pinMode(26, INPUT); //Throttle
+pinMode(27, INPUT); //Rudder
+pinMode(29, INPUT); //Flight Mode
+
+
+<--- put in loop --->
+variableName = pulseIn(24, HIGH);
+variableName = pulseIn(25, HIGH);
+variableName = pulseIn(26, HIGH);
+variableName = pulseIn(27, HIGH);
+variableName = pulseIn(29, HIGH);
