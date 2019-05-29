@@ -4,12 +4,12 @@ Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
       - Label:
-          default: (Required) VPC Information
+          default: VPC Information
         Parameters:
           - AZ1
           - Environment
       - Label:
-          default: (Required) CIDR Information
+          default: CIDR Information
         Parameters:
           - CIDRBlockPrimary
           - CIDRBlockSubnetMask

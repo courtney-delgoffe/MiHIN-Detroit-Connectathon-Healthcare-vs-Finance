@@ -1,6 +1,23 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Creates Windows IIS Web Server
+Description: Cloudticity - Creates Windows IIS Web Server
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Instance Configuration
+        Parameters:
+          - Environment
+          - InstanceName
+          - InstanceType
+          - ImageId
+          - RootVolumeSize
+          - KeyName
+      - Label:
+          default: Network Configuration
+        Parameters:
+          - SubnetId
+          - SecurityGroupIDs
 Parameters:
   InstanceName:
     Description: The name of the instance used for tagging.  Also used as the hostname.
@@ -18,7 +35,7 @@ Parameters:
     Default: Production
   InstanceType:
     Description: >-
-      Specify a valid EC2 instance type. Use new generation instance types where possible. For a list of instance types: https://aws.amazon.com/ec2/instance-types/
+      For a list of valid instance types: https://aws.amazon.com/ec2/instance-types/
     Type: String
     Default: t2.medium
   ImageId:
@@ -56,10 +73,6 @@ Resources:
               - Effect: Allow
                 Action:
                   - 'ec2:CreateTags'
-                  - 'ec2:Describe*'
-                  - 's3:List*'
-                  - 's3:Get*'
-                  - 's3:*'
                   - 'ssm:*'
                 Resource: '*'
   IAMProfile:
