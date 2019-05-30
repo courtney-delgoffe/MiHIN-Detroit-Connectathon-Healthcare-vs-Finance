@@ -1,6 +1,6 @@
 # AWS Qickstart Templates
 
-You can use these Quickstart templates to provision pre-configured resources in your AWS account including: a baseline development VPC, A Microsoft Windows server with IIS installed, or single instance LAMP stack.  
+Cloudticity is providing these Quickstart templates to provision pre-configured resources in your AWS account including: a baseline development VPC, A Microsoft Windows server with IIS installed, or single instance LAMP stack.  
 
 Each Quick start is easily deployed by clicking the link provided. Some notes regarding the templates and the deployment process:
   * You must be signed in to an existing AWS account.
@@ -8,7 +8,7 @@ Each Quick start is easily deployed by clicking the link provided. Some notes re
   * A new window will open to create the resources using Cloudformation.
   * Check the box next to "I acknowledge that AWS CloudFormation might create IAM resources with custom names."
   * The templates provided will create resources in your AWS account. All attempts have been made to use free-tier instance types, but charges may be incurred depending on other resources used.
-  * The templates provided are intended for for non-production use only.  They have been simplified for the purpose of this event and should only be used for development and testing.
+  * **The templates provided are intended for for non-production use only**.  They have been simplified for the purpose of this event and should only be used for development and testing.
 
   The Templates
 
