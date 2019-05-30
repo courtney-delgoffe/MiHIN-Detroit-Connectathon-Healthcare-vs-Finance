@@ -1,5 +1,24 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Cloudticity - Creates Single Instance LAMP stack'
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Instance and Network Configuration
+        Parameters:
+          - InstanceName
+          - InstanceType
+          - KeyName
+          - VpcId
+          - SubnetId
+          - SecurityGroupIDs
+      - Label:
+          default: Database Configuration
+        Parameters:
+          - DBName
+          - DBUsername
+          - DBPassword
+          - DBRootPassword
 Parameters:
   KeyName:
     Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
@@ -54,14 +73,6 @@ Parameters:
   InstanceName:
     Description: The name of the instance used for tagging.  Also used as the hostname.
     Type: String
-  SSHLocation:
-    Description: The IP address range that can be used to SSH to the EC2 instances
-    Type: String
-    MinLength: '9'
-    MaxLength: '18'
-    Default: 0.0.0.0/0
-    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
-    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x
   SecurityGroupIDs:
     Description: Specify any security groups (by SG ID) that need to be attached to the instance. Comma separated list.'
     Type: List<AWS::EC2::SecurityGroup::Id>
@@ -91,6 +102,37 @@ Mappings:
       HVM64: ami-0ff8a91507f77f867
       HVMG2: ami-0a584ac55a7631c0c
 Resources:
+  IAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: POC-IIS-Webserver
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:CreateTags'
+                  - 'ssm:*'
+                Resource: '*'
+  IAMProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    DependsOn:
+      - IAMRole
+    Properties:
+      Path: /
+      Roles:
+       - Ref: IAMRole
   WebServerInstance:
     Type: AWS::EC2::Instance
     Metadata:
@@ -323,6 +365,8 @@ Resources:
           Key: Name
           Value: 
             Ref: InstanceName
+      IamInstanceProfile: 
+        Ref: IAMProfile
       UserData:
         Fn::Base64:
           Fn::Join:
@@ -351,22 +395,6 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Timeout: PT5M
-  WebServerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Enable HTTP access via port 80
-      VpcId: 
-        Ref: VpcId
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '80'
-        ToPort: '80'
-        CidrIp: 0.0.0.0/0
-      - IpProtocol: tcp
-        FromPort: '22'
-        ToPort: '22'
-        CidrIp:
-          Ref: SSHLocation
 Outputs:
   WebsiteURL:
     Description: URL for newly created LAMP stack
